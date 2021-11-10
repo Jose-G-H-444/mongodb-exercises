@@ -68,16 +68,55 @@ const Course = mongoose.model('Course', schema);
 // Exercise 3
 // Get all published courses that are $15 or more,
 // or have the word by in their title
-async function getCourses() {
-    return await Course
-    .find({ isPublished: true })
-    .or([ { price: { $gte: 15 }}, 
-            { name: /.*by.*/i}])    // i for case insensitive
-    // .and([ { isPublished: true }, { $or : [ {tags: 'frontend' }, { tags: 'backend' }]}])
-    .sort({ price: -1 })
-    .select({ name: 1, author: 1, price: 1 });
+// async function getCourses() {
+//     return await Course
+//     .find({ isPublished: true })
+//     .or([{ price: { $gte: 15 }}, 
+//                 { name: /.*by.*/i}])    // i for case insensitive
+//     // .and([ { isPublished: true }, { $or : [ {tags: 'frontend' }, { tags: 'backend' }]}])
+//     .sort({ price: -1 })
+//     .select({ name: 1, author: 1, price: 1 });
+// }
+// async function run() {
+//     debug(await getCourses());
+// }
+// run();
+
+
+// UPDATING MONGODB DOCUMENTS
+// Query first approach
+// Useful when you want to validate
+//  ie: do not update author if the course is published
+// async function updateCourse(id) {
+//     const course = await Course.findById(id);
+//     if (!course) return;
+//     course.set({
+//         isPublished: true,
+//         author: 'Another Author'
+//     });
+//     debug(await course.save());
+// }
+// updateCourse('5a68fdc3615eda645bc6bdec');
+
+// Update first approach
+// Used when you know you have the correct information
+//   ie: updating fb likes
+// Use 'mongodb update operators' EXTREMELY USEFUL
+// async function updateCourse(id) {
+//     const result = await Course.findByIdAndUpdate(id, 
+//     {
+//         $set: { 
+//             isPublished: true,
+//             author: 'Jack'
+//         }
+//     }, { new: true });
+//     debug(result);
+// }
+// updateCourse('5a68fde3f09ad7646ddec17e');
+
+async function removeCourse(id) {
+    // const result = await Course.deleteOne({ id: id}); // returns whether deleted
+    const course = await Course.findByIdAndDelete(id, { new: true }); // returns deleted course
+    debug(course);
 }
-async function run() {
-    debug(await getCourses());
-}
-run();
+removeCourse('5a68fdf95db93f6477053ddd');
